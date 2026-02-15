@@ -1,3 +1,2 @@
 .direnv
-app/*.pkl
 .env

@@ -4,6 +4,8 @@ Simple content-based movie recommender built from TMDB data with Streamlit UI.
 
 Data Source: [TMDB 5000 Movie Dataset](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata)
 
+Deployed App: [https://mrs-abhr0.streamlit.app](https://mrs-abhr0.streamlit.app)
+
 ## Requirements
 - Python 3.13
 - See `requirements.txt`

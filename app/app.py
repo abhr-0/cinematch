@@ -42,19 +42,9 @@ def recommend(movie):
 if st.button("Recommend"):
     recommendations, posters = recommend(selected)
 
-    col1, col2, col3, col4, col5 = st.columns(5)
-    with col1:
-        st.image(posters[0])
-        st.text(recommendations[0])
-    with col2:
-        st.image(posters[1])
-        st.text(recommendations[1])
-    with col3:
-        st.image(posters[2])
-        st.text(recommendations[2])
-    with col4:
-        st.image(posters[3])
-        st.text(recommendations[3])
-    with col5:
-        st.image(posters[4])
-        st.text(recommendations[4])
+    cols = st.columns(5)
+
+    for i in range(5):
+        with cols[i]:
+            st.image(posters[i])
+            st.text(recommendations[i])

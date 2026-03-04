@@ -32,3 +32,14 @@ TMDB_API_KEY=your_api_key_here
 streamlit run app/app.py
 ```
 
+## Docker (or, Podman)
+
+1. Build the Docker image:
+```sh
+docker build -t movie-recommendation-system .
+```
+
+2. Run the container:
+```sh
+docker run -p 8501:8501 --env-file .env movie-recommendation-system
+```

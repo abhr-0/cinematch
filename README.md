@@ -1,10 +1,10 @@
-# Movie Recommender System
+# CineMatch
 
-Simple content-based movie recommender built from TMDB data with Streamlit UI.
+A Simple content-based movie recommender trained from TMDB data and built with Streamlit UI.
 
 Data Source: [TMDB 5000 Movie Dataset](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata)
 
-Deployed App: [https://mrs-abhr0.streamlit.app](https://mrs-abhr0.streamlit.app)
+Deployed App: [https://cinematch-abhr-0.streamlit.app](https://cinematch-abhr-0.streamlit.app)
 
 ## Requirements
 - Python 3.13
@@ -36,10 +36,10 @@ streamlit run app/app.py
 
 1. Build the Docker image:
 ```sh
-docker build -t movie-recommendation-system .
+docker build -t cinematch .
 ```
 
 2. Run the container:
 ```sh
-docker run -p 8501:8501 --env-file .env movie-recommendation-system
+docker run -p 8501:8501 --env-file .env cinematch
 ```

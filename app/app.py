@@ -4,6 +4,7 @@ import pickle
 import requests
 from dotenv import load_dotenv
 import os
+from math import exp
 
 load_dotenv()
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
@@ -31,20 +32,27 @@ def recommend(movie):
     
     recommended_movies = []
     recommended_posters = []
+    similarity_scores = []
 
     for i in movies_list:
         movie_id = movies.iloc[i[0]].movie_id
         recommended_movies.append(movies.iloc[i[0]].title)
         recommended_posters.append(fetch_poster(movie_id))
+        similarity_scores.append(i[1])
     
-    return recommended_movies, recommended_posters
+    return recommended_movies, recommended_posters, similarity_scores
+
+def scale_scores(scores):
+    return [int(100 / (1 + exp(-12*(score - 0.20)))) for score in scores]
 
 if st.button("Recommend"):
-    recommendations, posters = recommend(selected)
+    recommendations, posters, raw_scores = recommend(selected)
 
-    cols = st.columns(5)
+    scaled_scores = scale_scores(raw_scores)
 
     for i in range(5):
-        with cols[i]:
-            st.image(posters[i])
-            st.text(recommendations[i])
+        col1, col2 = st.columns([1, 3])
+        col1.image(posters[i])
+        with col2.container(vertical_alignment="distribute"):
+            st.header(recommendations[i], anchor=False, divider="gray")
+            st.progress(scaled_scores[i], text=f"Similarity: {int(scaled_scores[i])}%")

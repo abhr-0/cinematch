@@ -6,22 +6,10 @@ from dotenv import load_dotenv
 import os
 from math import exp
 
-load_dotenv()
-TMDB_API_KEY = os.getenv("TMDB_API_KEY")
-
-movies_dict = pickle.load(open("app/movies_dict.pkl", "rb"))
-movies = pd.DataFrame(movies_dict)
-
-similarity = pickle.load(open("app/similarity.pkl", "rb"))
-
-st.title("Movie Recommender System")
-
-selected = st.selectbox("Enter movie name:", movies["title"].values)
-
 def fetch_poster(movie_id):
     response = requests.get(f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={TMDB_API_KEY}")
     data = response.json()
-    # st.text(data)
+    
     return "https://images.tmdb.org/t/p/w500" + data["poster_path"]
 
 def recommend(movie):
@@ -44,6 +32,18 @@ def recommend(movie):
 
 def scale_scores(scores):
     return [int(100 / (1 + exp(-12*(score - 0.20)))) for score in scores]
+
+load_dotenv()
+TMDB_API_KEY = os.getenv("TMDB_API_KEY")
+
+movies_dict = pickle.load(open("app/movies_dict.pkl", "rb"))
+movies = pd.DataFrame(movies_dict)
+
+similarity = pickle.load(open("app/similarity.pkl", "rb"))
+
+st.title("Movie Recommender System")
+
+selected = st.selectbox("Enter movie name:", movies["title"].values)
 
 if st.button("Recommend"):
     recommendations, posters, raw_scores = recommend(selected)

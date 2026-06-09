@@ -43,9 +43,11 @@ similarity = pickle.load(open("app/similarity.pkl", "rb"))
 
 st.title("Movie Recommender System")
 
-selected = st.selectbox("Enter movie name:", movies["title"].values)
+with st.container(horizontal=True, vertical_alignment="bottom"):
+    selected = st.selectbox("Enter movie name:", movies["title"].values)
+    recommend_button_press = st.button("Recommend")
 
-if st.button("Recommend"):
+if recommend_button_press:
     titles, ids, raw_scores = recommend(selected)
 
     scaled_scores = scale_scores(raw_scores)

@@ -48,15 +48,19 @@ with st.container(horizontal=True, vertical_alignment="bottom"):
     recommend_button_press = st.button("Recommend")
 
 if recommend_button_press:
-    rows = [st.container(border=True) for _ in range(5)]
+    rows = [st.empty() for _ in range(5)]
 
     for row, recommendation in zip(rows, recommend(selected)):
-        col1, col2 = row.columns([1, 3])
-        col1.image(fetch_poster(recommendation["poster_path"]))
+        # Pre-fetch to not display an empty container with borders while app is waiting for poster
+        fetched_poster = fetch_poster(recommendation["poster_path"])
 
-        with col2.container():
-            scaled_score = scale_score(recommendation["score"])
+        with row.container(border=True):
+            col1, col2 = st.columns([1, 3])
+            col1.image(fetched_poster)
 
-            st.subheader(recommendation["title"], anchor=False)
-            st.text(recommendation["overview"])
-            st.progress(scaled_score, text=f"Similarity: {int(scaled_score)}%")
+            with col2.container():
+                scaled_score = scale_score(recommendation["score"])
+
+                st.subheader(recommendation["title"], anchor=False)
+                st.text(recommendation["overview"])
+                st.progress(scaled_score, text=f"Similarity: {int(scaled_score)}%")

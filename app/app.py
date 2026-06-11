@@ -6,32 +6,31 @@ from dotenv import load_dotenv
 import os
 from math import exp
 
-@st.cache_data(show_spinner="Fetching results...")
-def fetch_poster(movie_id):
-    response = requests.get(f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={TMDB_API_KEY}")
-    data = response.json()
-    
-    return requests.get("https://images.tmdb.org/t/p/w500" + data["poster_path"]).content
+@st.cache_data(show_spinner=False)
+def fetch_poster(poster_path):
+    return requests.get("https://images.tmdb.org/t/p/w500" + poster_path).content
+
+@st.cache_data(show_spinner=False)
+def fetch_movie_details(movie_id):
+    return requests.get(f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={TMDB_API_KEY}").json()
 
 def recommend(movie):
     movie_index = movies[movies["title"] == movie].index[0]
     distances = similarity[movie_index]
 
     movies_list = sorted(list(enumerate(distances)), reverse=True, key= lambda x: x[1])[1:6]
-    
-    recommendations = []
 
     for i in movies_list:
-        recommendations.append({
+        movie_details = fetch_movie_details(movies.iloc[i[0]].movie_id)
+        yield {
             "title": movies.iloc[i[0]].title,
-            "id": movies.iloc[i[0]].movie_id,
+            "poster_path": movie_details["poster_path"],
+            "overview": movie_details["overview"],
             "score": i[1]
-        })
-    
-    return recommendations
+        }
 
-def scale_scores(scores):
-    return [int(100 / (1 + exp(-12*(score - 0.20)))) for score in scores]
+def scale_score(score):
+    return int(100 / (1 + exp(-12*(score - 0.20)))) 
 
 load_dotenv()
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
@@ -49,13 +48,15 @@ with st.container(horizontal=True, vertical_alignment="bottom"):
     recommend_button_press = st.button("Recommend")
 
 if recommend_button_press:
-    recommendations = recommend(selected)
+    rows = [st.container(border=True) for _ in range(5)]
 
-    scaled_scores = scale_scores(recommendation["score"] for recommendation in recommendations)
+    for row, recommendation in zip(rows, recommend(selected)):
+        col1, col2 = row.columns([1, 3])
+        col1.image(fetch_poster(recommendation["poster_path"]))
 
-    for i in range(5):
-        col1, col2 = st.columns([1, 3])
-        col1.image(fetch_poster(recommendations[i]["id"]))
-        with col2.container(vertical_alignment="distribute"):
-            st.header(recommendations[i]["title"], anchor=False, divider="gray")
-            st.progress(scaled_scores[i], text=f"Similarity: {int(scaled_scores[i])}%")
+        with col2.container():
+            scaled_score = scale_score(recommendation["score"])
+
+            st.subheader(recommendation["title"], anchor=False)
+            st.text(recommendation["overview"])
+            st.progress(scaled_score, text=f"Similarity: {int(scaled_score)}%")

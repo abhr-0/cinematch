@@ -19,16 +19,16 @@ def recommend(movie):
 
     movies_list = sorted(list(enumerate(distances)), reverse=True, key= lambda x: x[1])[1:6]
     
-    recommended_titles = []
-    recommended_movie_ids = []
-    similarity_scores = []
+    recommendations = []
 
     for i in movies_list:
-        recommended_titles.append(movies.iloc[i[0]].title)
-        recommended_movie_ids.append(movies.iloc[i[0]].movie_id)
-        similarity_scores.append(i[1])
+        recommendations.append({
+            "title": movies.iloc[i[0]].title,
+            "id": movies.iloc[i[0]].movie_id,
+            "score": i[1]
+        })
     
-    return recommended_titles, recommended_movie_ids, similarity_scores
+    return recommendations
 
 def scale_scores(scores):
     return [int(100 / (1 + exp(-12*(score - 0.20)))) for score in scores]
@@ -49,13 +49,13 @@ with st.container(horizontal=True, vertical_alignment="bottom"):
     recommend_button_press = st.button("Recommend")
 
 if recommend_button_press:
-    titles, ids, raw_scores = recommend(selected)
+    recommendations = recommend(selected)
 
-    scaled_scores = scale_scores(raw_scores)
+    scaled_scores = scale_scores(recommendation["score"] for recommendation in recommendations)
 
     for i in range(5):
         col1, col2 = st.columns([1, 3])
-        col1.image(fetch_poster(ids[i]))
+        col1.image(fetch_poster(recommendations[i]["id"]))
         with col2.container(vertical_alignment="distribute"):
-            st.header(titles[i], anchor=False, divider="gray")
+            st.header(recommendations[i]["title"], anchor=False, divider="gray")
             st.progress(scaled_scores[i], text=f"Similarity: {int(scaled_scores[i])}%")

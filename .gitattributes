@@ -1,3 +1,0 @@
-app/movies_dict.pkl filter=lfs diff=lfs merge=lfs -text
-app/similarity.pkl filter=lfs diff=lfs merge=lfs -text
-app/*.pkl filter=lfs diff=lfs merge=lfs -text

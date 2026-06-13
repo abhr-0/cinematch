@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pickle
+from sklearn.metrics.pairwise import cosine_similarity
 import requests
 from dotenv import load_dotenv
 import os
@@ -16,9 +17,9 @@ def fetch_movie_details(movie_id):
 
 def recommend(movie):
     movie_index = movies[movies["title"] == movie].index[0]
-    distances = similarity[movie_index]
+    similarities = cosine_similarity(embeddings[movie_index], embeddings).flatten()
 
-    movies_list = sorted(list(enumerate(distances)), reverse=True, key= lambda x: x[1])[1:6]
+    movies_list = sorted(list(enumerate(similarities)), reverse=True, key= lambda x: x[1])[1:6]
 
     for i in movies_list:
         movie_details = fetch_movie_details(movies.iloc[i[0]].movie_id)
@@ -38,7 +39,7 @@ TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 movies_dict = pickle.load(open("app/movies_dict.pkl", "rb"))
 movies = pd.DataFrame(movies_dict)
 
-similarity = pickle.load(open("app/similarity.pkl", "rb"))
+embeddings = pickle.load(open("app/embeddings.pkl", "rb"))
 
 st.title("CineMatch")
 st.caption("A Content-Based Movie Recommender")

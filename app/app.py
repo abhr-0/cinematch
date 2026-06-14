@@ -7,6 +7,14 @@ from dotenv import load_dotenv
 import os
 from math import exp
 
+@st.cache_resource
+def load_movies_and_embeddings():
+    movies_dict = pickle.load(open("app/movies_dict.pkl", "rb"))
+    movies = pd.DataFrame(movies_dict)
+
+    embeddings = pickle.load(open("app/embeddings.pkl", "rb"))
+    return movies, embeddings
+
 @st.cache_data(show_spinner=False)
 def fetch_poster(poster_path):
     return requests.get("https://images.tmdb.org/t/p/w500" + poster_path).content
@@ -36,10 +44,7 @@ def scale_score(score):
 load_dotenv()
 TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
-movies_dict = pickle.load(open("app/movies_dict.pkl", "rb"))
-movies = pd.DataFrame(movies_dict)
-
-embeddings = pickle.load(open("app/embeddings.pkl", "rb"))
+movies, embeddings = load_movies_and_embeddings()
 
 st.title("CineMatch")
 st.caption("A Content-Based Movie Recommender")

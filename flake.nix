@@ -34,7 +34,6 @@
                   pandas
                   scikit-learn
                   nltk
-                  python-dotenv
                 ]
               ))
               jupyter

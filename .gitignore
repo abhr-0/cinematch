@@ -1,2 +1,2 @@
 .direnv
-.env
+.streamlit/secrets.toml

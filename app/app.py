@@ -3,8 +3,6 @@ import pandas as pd
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 import requests
-from dotenv import load_dotenv
-import os
 from math import exp
 
 @st.cache_resource
@@ -46,8 +44,7 @@ def recommend(movie):
 def scale_score(score):
     return int(100 / (1 + exp(-12*(score - 0.20)))) 
 
-load_dotenv()
-TMDB_BEARER_TOKEN = os.getenv("TMDB_BEARER_TOKEN")
+TMDB_BEARER_TOKEN = st.secrets["TMDB_BEARER_TOKEN"]
 
 TMDB_IMAGE_PATH = "https://images.tmdb.org/t/p/w500"
 

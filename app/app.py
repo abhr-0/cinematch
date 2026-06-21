@@ -15,13 +15,18 @@ def load_movies_and_embeddings():
     embeddings = pickle.load(open("app/embeddings.pkl", "rb"))
     return movies, embeddings
 
-@st.cache_data(show_spinner=False)
-def fetch_poster(poster_path):
-    return requests.get("https://images.tmdb.org/t/p/w500" + poster_path).content
+@st.cache_resource
+def get_session():
+    session = requests.Session()
+    session.headers.update({
+        "Accept": "application/json",
+        "Authorization": f"Bearer {TMDB_BEARER_TOKEN}"
+    })
+    return session
 
 @st.cache_data(show_spinner=False)
 def fetch_movie_details(movie_id):
-    return requests.get(f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={TMDB_API_KEY}").json()
+    return session.get(f"https://api.themoviedb.org/3/movie/{movie_id}").json()
 
 def recommend(movie):
     movie_index = movies[movies["title"] == movie].index[0]
@@ -42,9 +47,13 @@ def scale_score(score):
     return int(100 / (1 + exp(-12*(score - 0.20)))) 
 
 load_dotenv()
-TMDB_API_KEY = os.getenv("TMDB_API_KEY")
+TMDB_BEARER_TOKEN = os.getenv("TMDB_BEARER_TOKEN")
+
+TMDB_IMAGE_PATH = "https://images.tmdb.org/t/p/w500"
 
 movies, embeddings = load_movies_and_embeddings()
+
+session = get_session()
 
 st.title("CineMatch")
 st.caption("A Content-Based Movie Recommender")
@@ -57,12 +66,9 @@ if recommend_button_press:
     rows = [st.empty() for _ in range(5)]
 
     for row, recommendation in zip(rows, recommend(selected)):
-        # Pre-fetch to not display an empty container with borders while app is waiting for poster
-        fetched_poster = fetch_poster(recommendation["poster_path"])
-
         with row.container(border=True):
             col1, col2 = st.columns([1, 3])
-            col1.image(fetched_poster)
+            col1.image(TMDB_IMAGE_PATH + recommendation["poster_path"])
 
             with col2.container():
                 scaled_score = scale_score(recommendation["score"])

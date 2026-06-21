@@ -38,7 +38,6 @@
               ))
               jupyter
               streamlit
-              git-lfs
             ];
           };
         }

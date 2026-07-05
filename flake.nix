@@ -28,7 +28,7 @@
         {
           default = pkgs.mkShellNoCC {
             packages = with pkgs; [
-              (python3.withPackages (
+              (python313.withPackages (
                 ps: with ps; [
                   numpy
                   pandas

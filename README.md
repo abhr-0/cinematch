@@ -14,7 +14,7 @@ Deployed App: [https://cinematch-abhr-0.streamlit.app](https://cinematch-abhr-0.
 
 1. Clone the repository:
 ```sh
-git clone https://github.com/abhr-0/movie_recommender_system
+git clone https://github.com/abhr-0/cinematch
 ```
 
 2. Install dependencies or use `nix develop`:
@@ -22,9 +22,9 @@ git clone https://github.com/abhr-0/movie_recommender_system
 pip install -r requirements.txt
 ```
 
-3. Set TMDB API key (create `.env` or export env var):
-```env
-TMDB_API_KEY=your_api_key_here
+3. Set TMDB Bearer Token in `.streamlit/secrets.toml`:
+```toml
+TMDB_BEARER_TOKEN = "your_bearer_token_here"
 ```
 
 4. Run the Streamlit app:
@@ -41,5 +41,5 @@ docker build -t cinematch .
 
 2. Run the container:
 ```sh
-docker run -p 8501:8501 --env-file .env cinematch
+docker run -p 8501:8501 -v=.streamlit/secrets.toml:/app/.streamlit/secrets.toml:ro cinematch
 ```

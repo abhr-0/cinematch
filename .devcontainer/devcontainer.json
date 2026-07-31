@@ -19,7 +19,7 @@
   },
   "updateContentCommand": "[ -f packages.txt ] && sudo apt update && sudo apt upgrade -y && sudo xargs apt install -y <packages.txt; [ -f pyproject.toml ] && pip3 install --user . --group dev; echo '✅ Packages installed and Requirements met'",
   "postAttachCommand": {
-    "server": "streamlit run app/app.py --server.enableCORS false --server.enableXsrfProtection false"
+    "server": "streamlit run app/app.py --server.enableCORS false --server.enableXsrfProtection false --server.showEmailPrompt false"
   },
   "portsAttributes": {
     "8501": {
